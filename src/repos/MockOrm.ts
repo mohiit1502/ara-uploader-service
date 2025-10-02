@@ -3,9 +3,7 @@
 import jsonfile from 'jsonfile';
 
 import { IUser } from '@src/models/user.model';
-import { IBoard } from '@src/models/board.model';
-import { ITask } from '@src/models/task.model';
-import { ITaskList } from '@src/models/taskList.model';
+// Removed legacy imports for board, task, taskList
 
 
 // **** Variables **** //
@@ -17,9 +15,7 @@ const DB_FILE_NAME = 'database.json';
 
 interface IDb {
   users: IUser[];
-  boards: IBoard[];
-  tasks: ITask[];
-  taskLists: ITaskList[];
+  // Removed legacy board, task, and taskList arrays
 }
 
 

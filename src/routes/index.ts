@@ -1,14 +1,10 @@
 import { Router } from 'express';
-import boardRouter from './board.route';
-import taskListRouter from './taskList.route';
-import taskRouter from './task.route';
 import userRouter from './user.route';
+import imageRouter from './image.route';
 
 const router = Router();
 
-router.use('/boards', boardRouter);
-router.use('/tasks', taskRouter);
-router.use('/users', userRouter);
-router.use('/task-lists', taskListRouter);
+router.use('/', imageRouter);
+router.use('/', userRouter);
 
 export default router;

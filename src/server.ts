@@ -20,6 +20,8 @@ import HttpStatusCodes from '@src/constants/HttpStatusCodes';
 import { NodeEnvs } from '@src/constants/misc';
 import { RouteError } from '@src/other/classes';
 
+import authentication from '@src/middlewares/auth';
+
 
 // **** Variables **** //
 
@@ -30,10 +32,11 @@ const app = express();
 
 // Basic middleware
 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser(EnvVars.CookieProps.Secret));
+app.use('/api/secure', authentication);
 
 // Show routes called in console during development
 if (EnvVars.NodeEnv === NodeEnvs.Dev) {
@@ -46,7 +49,7 @@ if (EnvVars.NodeEnv === NodeEnvs.Production) {
 }
 
 // Add APIs, must be after middleware
-app.use('/', BaseRouter);
+app.use('/api', BaseRouter as import('express').RequestHandler);
 
 // Add error handler
 app.use((
@@ -63,7 +66,7 @@ app.use((
   if (err instanceof RouteError) {
     status = err.status;
   }
-  return res.status(status).json({ error: err.message });
+  return res.status(Number(status)).json({ error: (err ).message });
 });
 
 

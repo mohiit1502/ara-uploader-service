@@ -1,9 +1,26 @@
 import { IUser } from '@src/models/user.model';
 import { PrismaClient } from '../../generated/prisma';
+import bcrypt from 'bcryptjs';
+import { randomUUID } from 'crypto';
+
 const prisma = new PrismaClient();
 
 
 // **** Functions **** //
+/**
+ * Login: Check user credentials and return user if valid.
+ */
+async function login(email: string, password: string): Promise<IUser | null> {
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user || !user.pwdHash) return null;
+  const valid = await bcrypt.compare(password, user.pwdHash);
+  if (!valid) return null;
+  return {
+    ...user,
+    pwdHash: undefined,
+    role: user.role === 'Admin' ? 1 : 0,
+  };
+}
 
 /**
  * Get one user.
@@ -42,7 +59,7 @@ async function getAll(): Promise<IUser[]> {
 /**
  * Add one user.
  */
-async function add(user: IUser): Promise<void> {
+async function add(user: Omit<IUser, 'id'>): Promise<void> {
   await prisma.user.create({
     data: {
       // removed leftover MockOrm code
@@ -86,4 +103,5 @@ export default {
   add,
   update,
   delete: delete_,
+  login,
 } as const;

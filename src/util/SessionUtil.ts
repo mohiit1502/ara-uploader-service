@@ -17,7 +17,7 @@ const Errors = {
 
 // Options
 const Options = {
-  expiresIn: EnvVars.Jwt.Exp,
+  expiresIn: (EnvVars.Jwt as any).Exp,
 };
 
 
@@ -27,7 +27,7 @@ const Options = {
  * Get session data from request object (i.e. ISessionUser)
  */
 function getSessionData<T>(req: Request): Promise<string | T | undefined> {
-  const { Key } = EnvVars.CookieProps,
+  const { Key } = (EnvVars.CookieProps as any),
     jwt = req.signedCookies[Key];
   return _decode(jwt);
 }
@@ -44,7 +44,7 @@ async function addSessionData(
   }
   // Setup JWT
   const jwt = await _sign(data),
-    { Key, Options } = EnvVars.CookieProps;
+    { Key, Options } = (EnvVars.CookieProps as any);
   // Return
   return res.cookie(Key, jwt, Options);
 }
@@ -53,7 +53,7 @@ async function addSessionData(
  * Remove cookie
  */
 function clearCookie(res: Response): Response {
-  const { Key, Options } = EnvVars.CookieProps;
+  const { Key, Options } = (EnvVars.CookieProps as any);
   return res.clearCookie(Key, Options);
 }
 
@@ -67,7 +67,7 @@ function _sign(data: string | object | Buffer): Promise<string> {
   return new Promise((res, rej) => {
     jsonwebtoken.sign(
       data,
-      EnvVars.Jwt.Secret,
+      (EnvVars.Jwt as any).Secret,
       { expiresIn: '1h' },
       (err: Error | null, token?: string) => {
         return err ? rej(err) : res(token || '');
@@ -83,7 +83,7 @@ function _decode<T>(jwt: string): Promise<string | undefined | T> {
   return new Promise((res, rej) => {
     jsonwebtoken.verify(
       jwt,
-      EnvVars.Jwt.Secret,
+      (EnvVars.Jwt as any).Secret,
       undefined,
       (err: Error | null, decoded?: string | jsonwebtoken.JwtPayload) => {
         return err ? rej(Errors.Validation) : res(decoded as T);
