@@ -105,7 +105,7 @@ export const uploadImages = async (req: Request & { files: Express.Multer.File[]
     const results = validationResults.map(r => {
       if (r.shouldSave) {
         // Find processed result for this file (may be undefined for soft-failed)
-        const processed = processedResults.find(p => p.filename === r.file.originalname);
+        const processed = processedResults.find(p => p.id === r.id);
         return {
           filename: r.file.originalname,
           status: r.valid ? 'COMPLETED' : 'FAILED',
